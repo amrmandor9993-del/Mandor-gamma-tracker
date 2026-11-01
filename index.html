@@ -32,13 +32,13 @@ th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;white
 .leg{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 12px}.leg span{font:.74rem ui-monospace,monospace;color:var(--mut)}
 details summary{cursor:pointer;font:700 .8rem ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase}
 </style></head><body><main>
-<p class="eyebrow">Dealer gamma monitor · NDX · QQQ · SPX · SPY</p>
+<p class="eyebrow">Dealer gamma monitor · NQ · NDX · QQQ · SPX · SPY</p>
 <h1>Gamma <em>tracker</em></h1>
-<p class="note">Modeled from options open interest, not real dealer positions. Free sources disagree, so trust the sign of the regime, not the size. Each day uses one main source: GEXBoard for NDX and QQQ (regime at the open), ZeroGEX for SPX and SPY. Faded labels (*) mean the main source had no reading that day and other sources filled in.</p>
+<p class="note">Modeled from options open interest, not real dealer positions. Free sources disagree, so trust the sign of the regime, not the size. Main source: ZeroGEX (NQ levels are converted from NDX options to futures price). GEXBoard and others are second sources. Faded labels (*) mean ZeroGEX had no reading that day and other sources filled in.</p>
 <p class="note" id="status">Loading…</p>
 <div class="grid" id="cards"></div>
 <section class="card sec"><h2>Regime by day</h2>
-<div class="leg"><span style="color:var(--neg)">&#9632; Negative (-)</span><span style="color:var(--pos)">&#9632; Positive (+)</span><span style="color:var(--warn)">&#9632; Mixed (~)</span><span>&#9632; N/A (no reading)</span><span>dashed = main source missing that day</span></div>
+<div class="leg"><span style="color:var(--neg)">&#9632; Negative (-)</span><span style="color:var(--pos)">&#9632; Positive (+)</span><span style="color:var(--warn)">&#9632; Mixed (~)</span><span>&#9632; N/A (no reading)</span><span>dashed = ZeroGEX had no reading that day</span></div>
 <div class="wrap"><div class="hm" id="hm"></div></div>
 <p class="note">Hover a square for the details. Below: QQQ's opening gap and day move, then each instrument's gamma flip level of the day, with the percent distance of price from it (red = price below the flip, green = above). Hover for spot and walls.</p></section>
 <section class="card sec"><details><summary>Reading log (all readings)</summary>
@@ -46,7 +46,7 @@ details summary{cursor:pointer;font:700 .8rem ui-monospace,monospace;letter-spac
 <p class="note sec">Positive gamma: dealers are modeled to sell rallies and buy dips (calmer). Negative gamma: they trade with the move (wilder). Gamma flip is where modeled net gamma changes sign; call and put walls are the heaviest modeled strikes. Neither says which way price goes.</p>
 </main>
 <script>
-const INST=['NDX','QQQ','SPX','SPY'],PRIMARY={NDX:'GEXBoard',QQQ:'GEXBoard',SPX:'ZeroGEX',SPY:'ZeroGEX'};
+const INST=['NQ','NDX','QQQ','SPX','SPY'],PRIMARY={NQ:'ZeroGEX',NDX:'ZeroGEX',QQQ:'ZeroGEX',SPX:'ZeroGEX',SPY:'ZeroGEX'};
 function parseCSV(t){const rows=[];let r=[],f='',q=false;for(let i=0;i<t.length;i++){const c=t[i];
  if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=c}
  else if(c=='"')q=true;else if(c==','){r.push(f);f=''}else if(c=='\n'){r.push(f);rows.push(r);r=[];f=''}else if(c!='\r')f+=c}

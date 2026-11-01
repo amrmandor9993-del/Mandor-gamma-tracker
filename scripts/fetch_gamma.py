@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Daily logger: QQQ prices (Yahoo chart API), GEXBoard (NDX, QQQ), ZeroGEX (SPX, SPY, NDX, QQQ).
+"""Daily logger: QQQ prices (Yahoo chart API), ZeroGEX main source (NQ, NDX, QQQ, SPX, SPY), GEXBoard second source (NDX, QQQ).
 Never writes a guessed number: if a page cannot be read, that item is skipped and the run is marked failed."""
 import csv, os, re, sys, json, urllib.request, datetime as dt
 from html.parser import HTMLParser
@@ -96,7 +96,7 @@ def zerogex(target):
         pg.wait_for_timeout(5000)
         txt = clean(pg.inner_text('body')); b.close()
     out = []
-    for inst in ('SPX', 'SPY', 'NDX', 'QQQ'):
+    for inst in ('NQ', 'SPX', 'SPY', 'NDX', 'QQQ'):
         w = next((w for w in windows(txt, inst, 600) if full(levels(w))), None)
         if not w:
             problems.append(f'ZeroGEX {inst}: could not read levels'); continue
