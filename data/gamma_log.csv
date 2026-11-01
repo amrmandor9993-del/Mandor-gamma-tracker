@@ -20,5 +20,5 @@ id,date,time_et,session,instrument,regime,net_gex,unit,gamma_flip,call_wall,put_
 19,2026-10-30,15:59,Close,NDX,Negative,-1.57,$B/1%,30181,29675,27500,28385,ZeroGEX,
 20,2026-10-30,17:29,Close,QQQ,Negative,-2200000,QW raw,708.12,692,690,691.00,QuantWheel,After-hours spot
 21,2026-10-30,18:15,Close,QQQ,Negative,-1.13,$B/1%,712.32,710,680,692.26,ZeroGEX,Another ZeroGEX page showed -4.66B: sources differ
-21,2026-10-30,15:59,Close,SPX,Negative,-52.60,$B/1%,7757,7700,7570,7580,ZeroGEX,Backfilled from the ZeroGEX page on 1 Nov
-22,2026-10-30,18:14,Close,SPY,Negative,-4.38,$B/1%,773.86,770,750,756.59,ZeroGEX,After-hours spot; backfilled from the ZeroGEX page on 1 Nov
+22,2026-10-30,15:59,Close,SPX,Negative,-52.60,$B/1%,7757,7700,7570,7580,ZeroGEX,Backfilled from the ZeroGEX page on 1 Nov
+23,2026-10-30,18:14,Close,SPY,Negative,-4.38,$B/1%,773.86,770,750,756.59,ZeroGEX,After-hours spot; backfilled from the ZeroGEX page on 1 Nov
