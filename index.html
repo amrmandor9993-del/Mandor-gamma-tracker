@@ -19,14 +19,30 @@ h2{font:700 .8rem ui-monospace,monospace;letter-spacing:.14em;text-transform:upp
 th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{color:var(--mut);font-weight:600}
 .pill{padding:2px 8px;border-radius:99px;border:1px solid currentColor;font:.74rem ui-monospace,monospace}
 .fb{opacity:.6}.sec{margin-top:26px}
+.hm{display:grid;gap:5px;align-items:center;min-width:max-content}
+.hm .lab{font:700 .78rem ui-monospace,monospace;color:var(--mut);padding-right:8px;position:sticky;left:0;background:var(--panel)}
+.hm .dh{font:.66rem ui-monospace,monospace;color:var(--mut);text-align:center}
+.c{height:34px;min-width:44px;border-radius:7px;display:flex;align-items:center;justify-content:center;font:800 .9rem ui-monospace,monospace;border:1px solid transparent;cursor:default}
+.c.Negative{background:rgba(255,46,87,.2);border-color:var(--neg);color:var(--neg)}
+.c.Positive{background:rgba(0,245,160,.16);border-color:var(--pos);color:var(--pos)}
+.c.Mixed{background:rgba(255,176,32,.18);border-color:var(--warn);color:var(--warn)}
+.c.NA{background:#11151f;border-color:var(--line);color:var(--mut)}
+.c.fb{opacity:.5;border-style:dashed}
+.px{font:.72rem ui-monospace,monospace;text-align:center}
+.leg{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 12px}.leg span{font:.74rem ui-monospace,monospace;color:var(--mut)}
+details summary{cursor:pointer;font:700 .8rem ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase}
 </style></head><body><main>
 <p class="eyebrow">Dealer gamma monitor · NDX · QQQ · SPX · SPY</p>
 <h1>Gamma <em>tracker</em></h1>
 <p class="note">Modeled from options open interest, not real dealer positions. Free sources disagree, so trust the sign of the regime, not the size. Each day uses one main source: GEXBoard for NDX and QQQ (regime at the open), ZeroGEX for SPX and SPY. Faded labels (*) mean the main source had no reading that day and other sources filled in.</p>
 <p class="note" id="status">Loading…</p>
 <div class="grid" id="cards"></div>
-<section class="card sec"><h2>Regime by day</h2><div class="wrap"><table id="days"></table></div></section>
-<section class="card sec"><h2>Reading log</h2><p class="note">Units differ by source: $B/1% is billions per 1% move; QW raw is QuantWheel's own scale. Times are US Eastern.</p><div class="wrap"><table id="log"></table></div></section>
+<section class="card sec"><h2>Regime by day</h2>
+<div class="leg"><span style="color:var(--neg)">&#9632; Negative (-)</span><span style="color:var(--pos)">&#9632; Positive (+)</span><span style="color:var(--warn)">&#9632; Mixed (~)</span><span>&#9632; N/A (no reading)</span><span>dashed = main source missing that day</span></div>
+<div class="wrap"><div class="hm" id="hm"></div></div>
+<p class="note">Hover a square for the details. The two bottom rows are QQQ's opening gap and the day's move.</p></section>
+<section class="card sec"><details><summary>Reading log (all readings)</summary>
+<p class="note">Units differ by source: $B/1% is billions per 1% move; QW raw is QuantWheel's own scale. Times are US Eastern.</p><div class="wrap"><table id="log"></table></div></details></section>
 <p class="note sec">Positive gamma: dealers are modeled to sell rallies and buy dips (calmer). Negative gamma: they trade with the move (wilder). Gamma flip is where modeled net gamma changes sign; call and put walls are the heaviest modeled strikes. Neither says which way price goes.</p>
 </main>
 <script>
@@ -54,9 +70,15 @@ Promise.all(['data/gamma_log.csv','data/qqq_daily.csv'].map(u=>fetch(u+'?'+Date.
   return `<div class="card ${cls}"><div class="eyebrow">${i} · latest regime</div><div class="mega ${x.l.replace('/','')}">${x.l}</div><div class="note">as of ${ld||'–'}</div>`+
    (lv?`<div class="lv"><div><span>Gamma flip</span> ${esc(lv.gamma_flip)}</div><div><span>Call wall</span> ${esc(lv.call_wall)} · <span>Put wall</span> ${esc(lv.put_wall)}</div><div><span>Spot</span> ${esc(lv.spot)} · <span>vs flip</span> ${dist}</div><div class="note">levels from ${esc(lv.date)}</div></div>`:'')+`</div>`}).join('');
  const q=parseCSV(b).sort((p,q)=>p.date<q.date?-1:1);const g={};q.forEach((r,k)=>{if(k)g[r.date]={gap:+r.open/+q[k-1].close-1,chg:+r.close/+q[k-1].close-1}});
- const pc=v=>v==null?'–':`<span style="color:${v>=0?'var(--pos)':'var(--neg)'}">${(v>=0?'+':'')+(v*100).toFixed(2)}%</span>`;
- document.getElementById('days').innerHTML='<tr><th>Day</th>'+INST.map(i=>`<th>${i}</th>`).join('')+'<th>QQQ gap</th><th>QQQ day</th></tr>'+
-  days.slice().reverse().map(d=>`<tr><td>${d}</td>${INST.map(i=>`<td>${pill(dr[d+i])}</td>`).join('')}<td>${pc(g[d]?.gap)}</td><td>${pc(g[d]?.chg)}</td></tr>`).join('');
+ const hm=document.getElementById('hm');const sd=days.slice(-30);hm.style.gridTemplateColumns='64px repeat('+sd.length+',minmax(44px,1fr))';
+ let o='<div></div>'+sd.map(d=>`<div class="dh">${d.slice(5)}</div>`).join('');
+ INST.forEach(i=>{o+=`<div class="lab">${i}</div>`+sd.map(d=>{const x=dr[d+i];const sym=x.l=='Negative'?'-':x.l=='Positive'?'+':x.l=='Mixed'?'~':'';
+  const cl=log.filter(r=>r.date==d&&r.instrument==i&&r.session=='Close'&&r.unit=='$B/1%').pop();
+  const tip=`${d} ${i}: ${x.l}${x.fb?' (other sources only)':''}`+(cl?` | net GEX ${cl.net_gex}B | flip ${cl.gamma_flip}`:'');
+  return `<div class="c ${x.l.replace('/','')}${x.fb?' fb':''}" title="${esc(tip)}">${sym}</div>`}).join('')});
+ const pc=v=>v==null?'<div class="px" style="color:var(--mut)">–</div>':`<div class="px" style="color:${v>=0?'var(--pos)':'var(--neg)'}">${(v>=0?'+':'')+(v*100).toFixed(1)}%</div>`;
+ o+='<div class="lab">QQQ gap</div>'+sd.map(d=>pc(g[d]?.gap)).join('')+'<div class="lab">QQQ day</div>'+sd.map(d=>pc(g[d]?.chg)).join('');
+ hm.innerHTML=o;
  const cols=['id','date','time_et','session','instrument','regime','net_gex','unit','gamma_flip','call_wall','put_wall','spot','source','notes'];
  document.getElementById('log').innerHTML='<tr>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr>'+log.slice().reverse().map(r=>'<tr>'+cols.map(c=>`<td>${esc(r[c])}</td>`).join('')+'</tr>').join('');
 }).catch(e=>{document.getElementById('status').textContent='Could not load data: '+e.message});
