@@ -88,7 +88,7 @@ def gexboard(target):
         out.append(row(target, '16:00', 'Close', inst, regime(lv['net']), lv['net'], lv['flip'], lv['call'], lv['put'], lv['spot'], 'GEXBoard'))
     return out
 
-def zerogex(target):
+def zerogex(target, morning=False):
     from playwright.sync_api import sync_playwright
     with sync_playwright() as p:
         b = p.chromium.launch(); pg = b.new_page()
@@ -96,7 +96,7 @@ def zerogex(target):
         pg.wait_for_timeout(5000)
         txt = clean(pg.inner_text('body')); b.close()
     out = []
-    for inst in ('NQ', 'SPX', 'SPY', 'NDX', 'QQQ'):
+    for inst in (('NQ', 'NDX', 'QQQ') if morning else ('NQ', 'SPX', 'SPY', 'NDX', 'QQQ')):
         w = next((w for w in windows(txt, inst, 600) if full(levels(w))), None)
         if not w:
             problems.append(f'ZeroGEX {inst}: could not read levels'); continue
@@ -106,6 +106,12 @@ def zerogex(target):
         d = dt.datetime.strptime(a.group(1).replace(',', ''), '%b %d %Y' if len(a.group(1).split()[0]) <= 3 else '%B %d %Y').date()
         h = int(a.group(2)) % 12 + (12 if a.group(4).upper() == 'PM' else 0)
         t = f'{h:02d}:{a.group(3)}'
+        if morning:
+            if d != target or t < '09:30':
+                problems.append(f'ZeroGEX {inst}: no fresh morning reading (page as-of {d} {t})'); continue
+            lv = levels(w)
+            out.append(row(target, t, 'Open', inst, regime(lv['net']), lv['net'], lv['flip'], lv['call'], lv['put'], lv['spot'], 'ZeroGEX', 'Morning snapshot (page is ~15 min delayed)'))
+            continue
         if d != target or t < '15:59':
             continue
         lv = levels(w)
@@ -117,17 +123,24 @@ def main():
     now = dt.datetime.now(NY)
     target = dt.date.fromisoformat(os.environ['TARGET_DATE']) if os.environ.get('TARGET_DATE') else now.date()
     if target.weekday() >= 5: print('weekend'); return 0
-    px = list(csv.reader(open(PX)))
-    try: p = prices(target)
-    except Exception as e: p = None; problems.append(f'price fetch failed: {e}')
-    if p is None: problems.append(f'no QQQ price for {target} (holiday or not out yet)')
-    elif not any(r[0] == p[0] for r in px[1:]):
-        px.append(p); csv.writer(open(PX, 'w', newline='')).writerows(px)
+    morning = os.environ.get('MODE') == 'morning'
+    if morning and not os.environ.get('FORCE') and not ('09:30' <= now.strftime('%H:%M') <= '10:30'):
+        print('outside the morning window (New York time), skipping'); return 0
     log = list(csv.DictReader(open(LOG)))
     new = []
-    for fn in (gexboard, zerogex):
-        try: new += fn(target)
-        except Exception as e: problems.append(f'{fn.__name__} failed: {e}')
+    if morning:
+        try: new += zerogex(target, morning=True)
+        except Exception as e: problems.append(f'zerogex failed: {e}')
+    else:
+        px = list(csv.reader(open(PX)))
+        try: p = prices(target)
+        except Exception as e: p = None; problems.append(f'price fetch failed: {e}')
+        if p is None: problems.append(f'no QQQ price for {target} (holiday or not out yet)')
+        elif not any(r[0] == p[0] for r in px[1:]):
+            px.append(p); csv.writer(open(PX, 'w', newline='')).writerows(px)
+        for fn in (gexboard, zerogex):
+            try: new += fn(target)
+            except Exception as e: problems.append(f'{fn.__name__} failed: {e}')
     nid = max(int(r['id']) for r in log) + 1
     have = {(r['date'], r['instrument'], r['source'], r['session']) for r in log}
     for r in new:
