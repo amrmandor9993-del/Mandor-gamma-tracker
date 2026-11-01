@@ -44,3 +44,52 @@ id,date,time_et,session,instrument,regime,net_gex,unit,gamma_flip,call_wall,put_
 43,2026-10-26,,Intraday,SPY,Negative,,,,,,,DailyMacroBrief,"Intraday estimate, from the 26 Oct brief"
 44,2026-10-27,,Open,SPX,Negative,,,,,,,DailyMacroBrief,"Morning snapshot, from the 27 Oct brief (net about -$187M)"
 45,2026-10-27,,Open,SPY,Negative,,,,,,,DailyMacroBrief,"Morning snapshot, from the 27 Oct brief (net about -$1.12B)"
+46,2026-08-03,,Open,SPX,Positive,,,,,,,SPXGammaEdge,Fresh flip to positive in the pre-open report (based on the 31 Jul close)
+47,2026-08-04,,Close,SPX,Positive,,,,,,,DailyMacroBrief,From the 5 Aug brief; the page does not name the session date
+48,2026-08-04,,Close,SPY,Positive,,,,,,,DailyMacroBrief,From the 5 Aug brief; the page does not name the session date
+49,2026-08-04,,Close,NDX,Positive,,,,,,,DailyMacroBrief,From the 5 Aug brief; the page does not name the session date
+50,2026-08-04,,Close,QQQ,Positive,,,,,,,DailyMacroBrief,From the 5 Aug brief; the page does not name the session date
+51,2026-08-05,,Close,SPX,Positive,,,,,,,DailyMacroBrief,From the 6 Aug brief; regime at the prior close
+52,2026-08-05,,Close,QQQ,Positive,,,,,,,DailyMacroBrief,From the 6 Aug brief; regime at the prior close
+53,2026-08-10,,Close,SPX,Positive,,,,,,,DailyMacroBrief,From the 11 Aug brief; regime at the prior close
+54,2026-08-10,,Close,QQQ,Positive,,,,,,,DailyMacroBrief,From the 11 Aug brief; regime at the prior close
+55,2026-08-12,,Close,SPX,Positive,,,,,,,DailyMacroBrief,From the 13 Aug brief; regime at the prior close
+56,2026-08-12,,Close,QQQ,Positive,,,,,,,DailyMacroBrief,From the 13 Aug brief; regime at the prior close
+57,2026-08-14,,Close,SPX,Positive,,,,,,,DailyMacroBrief,From the 17 Aug brief; regime at the prior close
+58,2026-08-14,,Close,QQQ,Positive,,,,,,,DailyMacroBrief,From the 17 Aug brief; regime at the prior close
+59,2026-08-17,,Close,SPX,Positive,,,,,,,DailyMacroBrief,From the 18 Aug brief; regime at the prior close
+60,2026-08-17,,Close,QQQ,Positive,,,,,,,DailyMacroBrief,From the 18 Aug brief; regime at the prior close
+61,2026-08-19,,Close,SPX,Positive,,,,,,,DailyMacroBrief,From the 20 Aug brief; regime at the prior close; QQQ sign not stated
+62,2026-08-21,,Close,SPX,Positive,,,,,,,DailyMacroBrief,From the 24 Aug brief; regime at the prior close; had been negative before
+63,2026-08-21,,Close,QQQ,Negative,,,,,,,DailyMacroBrief,From the 24 Aug brief; regime at the prior close (modestly negative)
+64,2026-08-25,,Close,SPX,Positive,,,,,,,DailyMacroBrief,From the 26 Aug brief; regime at the prior close
+65,2026-08-25,,Close,QQQ,Negative,,,,,,,DailyMacroBrief,From the 26 Aug brief; regime at the prior close
+66,2026-08-28,,Close,SPX,Positive,,,,,,,DailyMacroBrief,From the 31 Aug brief; regime at the prior close
+67,2026-08-28,,Close,QQQ,Mixed,,,,,,,DailyMacroBrief,"From the 31 Aug brief; regime at the prior close (QQQ ""in transition"")"
+68,2026-08-31,,Close,SPX,Positive,,,,,,,DailyMacroBrief,From the 1 Sep brief; regime at the prior close
+69,2026-08-31,,Close,QQQ,Negative,,,,,,,DailyMacroBrief,From the 1 Sep brief; regime at the prior close (just below its transition)
+70,2026-09-04,,Close,SPX,Positive,,,,,,,ReflectionsOfReality,Spot above the zero-gamma level (weekly map)
+71,2026-09-14,,Open,SPY,Negative,,,,,,,AdaptiveTrader,Pre-market note: negative gamma in SPY and QQQ
+72,2026-09-14,,Open,QQQ,Negative,,,,,,,AdaptiveTrader,Pre-market note: negative gamma in SPY and QQQ
+73,2026-09-15,,Open,SPY,Negative,,,,,,,AdaptiveTrader,Pre-market note: below the flip
+74,2026-09-18,,Close,SPX,Positive,,,,,,,ReflectionsOfReality,"Implied (""constructive gamma""); the same page also shows a bearish momentum reading"
+75,2026-09-21,,Open,SPX,Positive,,,,,,,AdaptiveTrader,Pre-market note: firmly in positive gamma
+76,2026-09-22,,Open,SPX,Positive,,,,,,,moomoo,"0DTE gamma surface around spot, not the aggregate figure"
+77,2026-09-24,,Open,SPY,Negative,,,,,,,AdaptiveTrader,Pre-market note: expected to open below zero gamma
+78,2026-09-24,,Open,QQQ,Negative,,,,,,,AdaptiveTrader,Pre-market note: expected to open below zero gamma
+79,2026-09-25,,Close,SPX,Positive,,,,,,,ReflectionsOfReality,Spot above the zero-gamma level (weekly map); the Adaptive Trader note of 28 Sep agrees
+80,2026-09-28,,Close,SPX,Positive,,,,,,,AdaptiveTrader,From the 29 Sep note (slightly above zero gamma)
+81,2026-09-28,,Close,SPY,Negative,,,,,,,AdaptiveTrader,From the 29 Sep note (closed below the flip)
+82,2026-09-28,,Close,QQQ,Negative,,,,,,,AdaptiveTrader,From the 29 Sep note (marginally below the flip)
+83,2026-09-29,,Close,SPY,Negative,,,,,,,AdaptiveTrader,From the 30 Sep note
+84,2026-09-29,,Close,QQQ,Positive,,,,,,,AdaptiveTrader,From the 30 Sep note (flip crossed back above)
+85,2026-10-01,,Open,SPY,Negative,,,,,,,AdaptiveTrader,Pre-market note: SPY map dominated by negative gamma
+86,2026-10-02,,Open,SPX,Positive,,,,,,,moomoo,"0DTE gamma surface around spot, not the aggregate figure"
+87,2026-10-02,,Close,SPX,Positive,,,,,,,ReflectionsOfReality,Positive gamma environment (weekly map)
+88,2026-10-08,,Open,SPX,Positive,,,,,,,moomoo,"0DTE gamma surface around spot, not the aggregate figure"
+89,2026-10-09,,Close,SPX,Positive,,,,,,,ReflectionsOfReality,Spot above the zero-gamma level (weekly map)
+90,2026-10-12,,Close,SPX,Positive,,,,,,,ReflectionsOfReality,Close 7807.24 vs flip 7721.60
+91,2026-10-13,,Close,SPX,Positive,,,,,,,AdaptiveTrader,From the 14 Oct note (about 1% above zero gamma)
+92,2026-10-14,,Close,SPX,Negative,,,,,,,ReflectionsOfReality,Close 7718.94 vs flip 7734.24
+93,2026-10-14,,Close,SPY,Negative,,,,,,,AdaptiveTrader,From the 15 Oct note (below the flip)
+94,2026-10-14,,Close,QQQ,Negative,,,,,,,AdaptiveTrader,From the 15 Oct note (below the flip)
