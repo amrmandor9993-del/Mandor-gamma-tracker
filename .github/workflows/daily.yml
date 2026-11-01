@@ -11,6 +11,9 @@ on:
         default: 'close'
         type: choice
         options: [close, morning]
+      date:
+        description: 'optional test date YYYY-MM-DD (leave empty for today)'
+        default: ''
 permissions:
   contents: write
 concurrency:
@@ -22,6 +25,7 @@ jobs:
     env:
       MODE: ${{ github.event.inputs.mode || ((github.event.schedule == '35 13 * * 1-5' || github.event.schedule == '35 14 * * 1-5') && 'morning' || 'close') }}
       FORCE: ${{ github.event.inputs.mode && '1' || '' }}
+      TARGET_DATE: ${{ github.event.inputs.date }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

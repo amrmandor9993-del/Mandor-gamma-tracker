@@ -141,11 +141,13 @@ def main():
         for fn in (gexboard, zerogex):
             try: new += fn(target)
             except Exception as e: problems.append(f'{fn.__name__} failed: {e}')
+    print(f'READ {len(new)} rows from the pages for {target}:')
+    for r in new: print('  ', r['instrument'], r['session'], r['regime'], r['net_gex'], r['gamma_flip'], r['source'])
     nid = max(int(r['id']) for r in log) + 1
     have = {(r['date'], r['instrument'], r['source'], r['session']) for r in log}
     for r in new:
         k = (r['date'], r['instrument'], r['source'], r['session'])
-        if k in have: continue
+        if k in have: print('   (already in log, skipped):', k); continue
         r['id'] = nid; nid += 1; log.append(r); have.add(k)
     with open(LOG, 'w', newline='') as f:
         w = csv.DictWriter(f, HEAD); w.writeheader(); w.writerows(log)
