@@ -40,7 +40,7 @@ details summary{cursor:pointer;font:700 .8rem ui-monospace,monospace;letter-spac
 <section class="card sec"><h2>Regime by day</h2>
 <div class="leg"><span style="color:var(--neg)">&#9632; Negative (-)</span><span style="color:var(--pos)">&#9632; Positive (+)</span><span style="color:var(--warn)">&#9632; Mixed (~)</span><span>&#9632; N/A (no reading)</span><span>dashed = main source missing that day</span></div>
 <div class="wrap"><div class="hm" id="hm"></div></div>
-<p class="note">Hover a square for the details. The two bottom rows are QQQ's opening gap and the day's move.</p></section>
+<p class="note">Hover a square for the details. Below: QQQ's opening gap and day move, then each instrument's spot versus its gamma flip (negative = price below the flip, positive = above).</p></section>
 <section class="card sec"><details><summary>Reading log (all readings)</summary>
 <p class="note">Units differ by source: $B/1% is billions per 1% move; QW raw is QuantWheel's own scale. Times are US Eastern.</p><div class="wrap"><table id="log"></table></div></details></section>
 <p class="note sec">Positive gamma: dealers are modeled to sell rallies and buy dips (calmer). Negative gamma: they trade with the move (wilder). Gamma flip is where modeled net gamma changes sign; call and put walls are the heaviest modeled strikes. Neither says which way price goes.</p>
@@ -78,6 +78,8 @@ Promise.all(['data/gamma_log.csv','data/qqq_daily.csv'].map(u=>fetch(u+'?'+Date.
   return `<div class="c ${x.l.replace('/','')}${x.fb?' fb':''}" title="${esc(tip)}">${sym}</div>`}).join('')});
  const pc=v=>v==null?'<div class="px" style="color:var(--mut)">–</div>':`<div class="px" style="color:${v>=0?'var(--pos)':'var(--neg)'}">${(v>=0?'+':'')+(v*100).toFixed(1)}%</div>`;
  o+='<div class="lab">QQQ gap</div>'+sd.map(d=>pc(g[d]?.gap)).join('')+'<div class="lab">QQQ day</div>'+sd.map(d=>pc(g[d]?.chg)).join('');
+ const fd=(d,i)=>{const r=log.filter(x=>x.date==d&&x.instrument==i&&x.unit=='$B/1%'&&x.gamma_flip!==''&&x.spot!==''&&!isNaN(+x.gamma_flip)&&!isNaN(+x.spot)).sort((p,q)=>(p.time_et<q.time_et?-1:1)).pop();return r?{v:+r.spot/+r.gamma_flip-1,f:r.gamma_flip,s:r.spot}:null};
+ INST.forEach(i=>{o+=`<div class="lab">${i} vs flip</div>`+sd.map(d=>{const x=fd(d,i);return x?`<div class="px" title="${esc(d+' '+i+': spot '+x.s+' vs flip '+x.f)}" style="color:${x.v>=0?'var(--pos)':'var(--neg)'}">${(x.v>=0?'+':'')+(x.v*100).toFixed(1)}%</div>`:'<div class="px" style="color:var(--mut)">–</div>'}).join('')});
  hm.innerHTML=o;
  const cols=['id','date','time_et','session','instrument','regime','net_gex','unit','gamma_flip','call_wall','put_wall','spot','source','notes'];
  document.getElementById('log').innerHTML='<tr>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr>'+log.slice().reverse().map(r=>'<tr>'+cols.map(c=>`<td>${esc(r[c])}</td>`).join('')+'</tr>').join('');
