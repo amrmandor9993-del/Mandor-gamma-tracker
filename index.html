@@ -30,6 +30,9 @@ th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;white
 .c.fb{opacity:.5;border-style:dashed}
 .px{font:.72rem ui-monospace,monospace;text-align:center}
 .leg{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 12px}.leg span{font:.74rem ui-monospace,monospace;color:var(--mut)}
+.sf{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:6px 0 10px}.sf label{font:.78rem ui-monospace,monospace;color:var(--mut)}
+.sf input,.sf button{background:#11151f;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font:.82rem ui-monospace,monospace;color-scheme:dark}.sf button{cursor:pointer}
+tr.cl{cursor:pointer}tr.cl:hover td{background:#11151f}
 details summary{cursor:pointer;font:700 .8rem ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase}
 </style></head><body><main>
 <p class="eyebrow">Dealer gamma monitor · NQ · NDX · QQQ · SPX · SPY</p>
@@ -41,6 +44,10 @@ details summary{cursor:pointer;font:700 .8rem ui-monospace,monospace;letter-spac
 <div class="leg"><span style="color:var(--neg)">&#9632; Negative (-)</span><span style="color:var(--pos)">&#9632; Positive (+)</span><span style="color:var(--warn)">&#9632; Mixed (~)</span><span>&#9632; N/A (no reading)</span><span>dashed = ZeroGEX had no reading that day</span></div>
 <div class="wrap"><div class="hm" id="hm"></div></div>
 <p class="note">Hover a square for the details. Below: QQQ's opening gap and day move, then each instrument's gamma flip level of the day, with the percent distance of price from it (red = price below the flip, green = above). Hover for spot and walls.</p></section>
+<section class="card sec" id="srch"><h2>Search by date</h2>
+<div class="sf"><label>From <input type="date" id="d1"></label><label>To <input type="date" id="d2"></label><button id="all" type="button">All days</button></div>
+<p class="note">Pick one day (same date in both boxes) to see all its readings, or a range to list each trading day with its regime. Click a row, or a date above the squares, to open that day.</p>
+<div class="wrap"><table id="sr"></table></div><div id="det" class="sec"></div></section>
 <section class="card sec"><details><summary>Reading log (all readings)</summary>
 <p class="note">Units differ by source: $B/1% is billions per 1% move; QW raw is QuantWheel's own scale. Times are US Eastern.</p><div class="wrap"><table id="log"></table></div></details></section>
 <p class="note sec">Positive gamma: dealers are modeled to sell rallies and buy dips (calmer). Negative gamma: they trade with the move (wilder). Gamma flip is where modeled net gamma changes sign; call and put walls are the heaviest modeled strikes. Neither says which way price goes.</p>
@@ -72,7 +79,7 @@ Promise.all(['data/gamma_log.csv','data/qqq_daily.csv'].map(u=>fetch(u+'?'+Date.
    (lv?`<div class="lv"><div><span>Gamma flip</span> ${esc(lv.gamma_flip)}</div><div><span>Call wall</span> ${esc(lv.call_wall)} · <span>Put wall</span> ${esc(lv.put_wall)}</div><div><span>Spot</span> ${esc(lv.spot)} · <span>vs flip</span> ${dist}</div><div class="note">levels from ${esc(lv.date)}</div></div>`:'')+`</div>`}).join('');
  const q=parseCSV(b).sort((p,q)=>p.date<q.date?-1:1);const g={};q.forEach((r,k)=>{if(k)g[r.date]={gap:+r.open/+q[k-1].close-1,chg:+r.close/+q[k-1].close-1}});
  const hm=document.getElementById('hm');const sd=days.slice(-90);hm.style.gridTemplateColumns='64px repeat('+sd.length+',minmax(58px,1fr))';
- let o='<div></div>'+sd.map(d=>`<div class="dh">${d.slice(5)}</div>`).join('');
+ let o='<div></div>'+sd.map(d=>`<div class="dh" data-d="${d}" style="cursor:pointer">${d.slice(5)}</div>`).join('');
  INST.forEach(i=>{o+=`<div class="lab">${i}</div>`+sd.map(d=>{const x=dr[d+i];const sym=x.l=='Negative'?'-':x.l=='Positive'?'+':x.l=='Mixed'?'~':'';
   const cl=log.filter(r=>r.date==d&&r.instrument==i&&r.session=='Close'&&r.unit=='$B/1%').pop();
   const tip=`${d} ${i}: ${x.l}${x.fb?' (other sources only)':''}`+(cl?` | net GEX ${cl.net_gex}B | flip ${cl.gamma_flip}`:'');
@@ -86,5 +93,17 @@ Promise.all(['data/gamma_log.csv','data/qqq_daily.csv'].map(u=>fetch(u+'?'+Date.
  hm.innerHTML=o;
  const cols=['id','date','time_et','session','instrument','regime','net_gex','unit','gamma_flip','call_wall','put_wall','spot','source','notes'];
  document.getElementById('log').innerHTML='<tr>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr>'+log.slice().reverse().map(r=>'<tr>'+cols.map(c=>`<td>${esc(r[c])}</td>`).join('')+'</tr>').join('');
+ const d1=document.getElementById('d1'),d2=document.getElementById('d2'),det=document.getElementById('det'),sr=document.getElementById('sr');
+ const first=days[0],last=days[days.length-1];d1.min=d2.min=first;d1.max=d2.max=last;
+ const t0=new Date(last+'T00:00:00Z');t0.setUTCDate(t0.getUTCDate()-13);const s0=t0.toISOString().slice(0,10);d1.value=s0<first?first:s0;d2.value=last;
+ function wk(a,b){const o=[],t=new Date(a+'T00:00:00Z'),e=new Date(b+'T00:00:00Z');for(let n=0;t<=e&&n<800;n++,t.setUTCDate(t.getUTCDate()+1)){const w=t.getUTCDay();if(w>0&&w<6)o.push(t.toISOString().slice(0,10))}return o}
+ function showDay(d){const rs=log.filter(x=>x.date==d);det.innerHTML=`<h2>${esc(d)} · all readings</h2>`+(rs.length?`<div class="wrap"><table><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>${rs.map(r=>'<tr>'+cols.map(c=>`<td>${esc(r[c])}</td>`).join('')+'</tr>').join('')}</table></div>`:'<p class="note">No readings recorded for this day.</p>')}
+ function render(){if(!d1.value||!d2.value)return;let a=d1.value,b=d2.value;if(a>b)[a,b]=[b,a];const ds=wk(a,b);
+  sr.innerHTML=ds.length?'<tr><th>Date</th>'+INST.map(i=>`<th>${i}</th>`).join('')+'</tr>'+ds.map(d=>`<tr class="cl" data-d="${d}"><td>${d}</td>`+INST.map(i=>`<td>${pill(dayRegime(log,d,i))}</td>`).join('')+'</tr>').join(''):'<tr><td class="note">No trading days in this range.</td></tr>';
+  sr.querySelectorAll('tr.cl').forEach(tr=>tr.onclick=()=>showDay(tr.dataset.d));
+  if(a==b)showDay(a);else det.innerHTML=''}
+ d1.onchange=d2.onchange=render;document.getElementById('all').onclick=()=>{d1.value=first;d2.value=last;render()};
+ hm.querySelectorAll('.dh[data-d]').forEach(el=>el.onclick=()=>{d1.value=d2.value=el.dataset.d;render();document.getElementById('srch').scrollIntoView({behavior:'smooth'})});
+ render();
 }).catch(e=>{document.getElementById('status').textContent='Could not load data: '+e.message});
 </script></body></html>
