@@ -1,0 +1,24 @@
+id,date,time_et,session,instrument,regime,net_gex,unit,gamma_flip,call_wall,put_wall,spot,source,notes
+1,2026-10-13,,Open,NDX,Negative,,,,,,,GEXBoard,Short gamma at the open; time not stated
+2,2026-10-13,,Open,QQQ,Negative,,,,,,,GEXBoard,Short gamma at the open; time not stated
+3,2026-10-13,16:00,Close,NDX,Negative,-2.29,$B/1%,30623.60,30800,30550,30575.95,GEXBoard,Backfilled from the GEXBoard archive page
+4,2026-10-13,16:00,Close,QQQ,Negative,-4.12,$B/1%,745.98,760,740,743.53,GEXBoard,Backfilled from the GEXBoard archive page
+5,2026-10-26,12:55,Intraday,QQQ,Negative,-4.55,$B/1%,,,,712.35,Bullflow,
+6,2026-10-26,13:07,Intraday,QQQ,Negative,-219000,QW raw,709.10,730,700,713.62,QuantWheel,Spot above flip but net GEX negative: models differ
+7,2026-10-26,,Intraday,NDX,Positive,245,QW raw,,29320,29275,29317,QuantWheel,Time not stated (from next-day reference)
+8,2026-10-27,09:24,Open,NDX,Positive,33,QW raw,29135,29400,29000,29274,QuantWheel,
+9,2026-10-27,,Open,NDX,Mixed,,,,,,,GEXBoard,Regime at the open; time not stated
+10,2026-10-27,,Open,QQQ,Negative,,,,,,,GEXBoard,Short gamma at the open; time not stated
+11,2026-10-27,16:00,Close,NDX,Positive,2.22,$B/1%,29373.84,29660,28000,29644.23,GEXBoard,
+12,2026-10-27,16:00,Close,QQQ,Negative,-0.89,$B/1%,724.75,721,700,720.99,GEXBoard,
+13,2026-10-28,10:15,Intraday,NDX,Positive,1.70,$B/1%,28373,30000,29000,29675,ZeroGEX,Data delayed ~15 min
+14,2026-10-28,10:15,Intraday,QQQ,Negative,-2.83,$B/1%,730.21,730,720,721.64,ZeroGEX,Data delayed ~15 min
+15,2026-10-28,14:21,Intraday,NDX,Positive,1.60,$B/1%,28125,29675,29000,29649,ZeroGEX,
+16,2026-10-28,14:20,Intraday,QQQ,Negative,-2.06,$B/1%,728.85,730,720,721.17,ZeroGEX,
+17,2026-10-29,,Intraday,NDX,N/A,,,,,,,,No reliable reading found
+18,2026-10-29,,Intraday,QQQ,N/A,,,,,,,,No reliable reading found
+19,2026-10-30,15:59,Close,NDX,Negative,-1.57,$B/1%,30181,29675,27500,28385,ZeroGEX,
+20,2026-10-30,17:29,Close,QQQ,Negative,-2200000,QW raw,708.12,692,690,691.00,QuantWheel,After-hours spot
+21,2026-10-30,18:15,Close,QQQ,Negative,-1.13,$B/1%,712.32,710,680,692.26,ZeroGEX,Another ZeroGEX page showed -4.66B: sources differ
+21,2026-10-30,15:59,Close,SPX,Negative,-52.60,$B/1%,7757,7700,7570,7580,ZeroGEX,Backfilled from the ZeroGEX page on 1 Nov
+22,2026-10-30,18:14,Close,SPY,Negative,-4.38,$B/1%,773.86,770,750,756.59,ZeroGEX,After-hours spot; backfilled from the ZeroGEX page on 1 Nov

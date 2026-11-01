@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gamma Tracker</title>
+<style>
+:root{--bg:#05060a;--panel:#0c0f16;--line:#1b2130;--fg:#eef1f8;--mut:#7d89a6;--pos:#00f5a0;--neg:#ff2e57;--warn:#ffb020}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:2.2rem;margin:.2rem 0}h1 em{font-style:normal;color:var(--neg);text-shadow:0 0 24px rgba(255,46,87,.6)}
+h2{font:700 .8rem ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;margin:0 0 8px}
+.note{color:var(--mut);font-size:.82rem;line-height:1.55}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:18px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;position:relative;overflow:hidden}
+.card.n{box-shadow:0 0 36px -14px var(--neg)}.card.p{box-shadow:0 0 36px -14px var(--pos)}.card.m{box-shadow:0 0 36px -14px var(--warn)}
+.eyebrow{font:.72rem ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.mega{font:800 2.1rem ui-monospace,monospace;text-transform:uppercase;margin:8px 0}
+.Negative{color:var(--neg)}.Positive{color:var(--pos)}.Mixed{color:var(--warn)}.NA{color:var(--mut)}
+.lv{margin-top:10px;font:.82rem ui-monospace,monospace;line-height:1.7}.lv span{color:var(--mut)}
+.wrap{overflow-x:auto;margin-top:6px}table{border-collapse:collapse;width:100%;font-size:.82rem}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{color:var(--mut);font-weight:600}
+.pill{padding:2px 8px;border-radius:99px;border:1px solid currentColor;font:.74rem ui-monospace,monospace}
+.fb{opacity:.6}.sec{margin-top:26px}
+</style></head><body><main>
+<p class="eyebrow">Dealer gamma monitor · NDX · QQQ · SPX · SPY</p>
+<h1>Gamma <em>tracker</em></h1>
+<p class="note">Modeled from options open interest, not real dealer positions. Free sources disagree, so trust the sign of the regime, not the size. Each day uses one main source: GEXBoard for NDX and QQQ (regime at the open), ZeroGEX for SPX and SPY. Faded labels (*) mean the main source had no reading that day and other sources filled in.</p>
+<p class="note" id="status">Loading…</p>
+<div class="grid" id="cards"></div>
+<section class="card sec"><h2>Regime by day</h2><div class="wrap"><table id="days"></table></div></section>
+<section class="card sec"><h2>Reading log</h2><p class="note">Units differ by source: $B/1% is billions per 1% move; QW raw is QuantWheel's own scale. Times are US Eastern.</p><div class="wrap"><table id="log"></table></div></section>
+<p class="note sec">Positive gamma: dealers are modeled to sell rallies and buy dips (calmer). Negative gamma: they trade with the move (wilder). Gamma flip is where modeled net gamma changes sign; call and put walls are the heaviest modeled strikes. Neither says which way price goes.</p>
+</main>
+<script>
+const INST=['NDX','QQQ','SPX','SPY'],PRIMARY={NDX:'GEXBoard',QQQ:'GEXBoard',SPX:'ZeroGEX',SPY:'ZeroGEX'};
+function parseCSV(t){const rows=[];let r=[],f='',q=false;for(let i=0;i<t.length;i++){const c=t[i];
+ if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=c}
+ else if(c=='"')q=true;else if(c==','){r.push(f);f=''}else if(c=='\n'){r.push(f);rows.push(r);r=[];f=''}else if(c!='\r')f+=c}
+ if(f||r.length){r.push(f);rows.push(r)}const h=rows.shift();return rows.filter(x=>x.length>1).map(x=>Object.fromEntries(h.map((k,i)=>[k,x[i]]))) }
+const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const valid=r=>['Positive','Negative','Mixed'].includes(r.regime);
+function lab(rs){const p=rs.filter(x=>x.regime=='Positive').length,n=rs.filter(x=>x.regime=='Negative').length,m=rs.filter(x=>x.regime=='Mixed').length;return (m||(p&&n))?'Mixed':p?'Positive':'Negative'}
+function dayRegime(log,d,i){const all=log.filter(x=>x.date==d&&x.instrument==i&&valid(x));const pr=all.filter(x=>x.source==PRIMARY[i]);
+ if(pr.length){const o=pr.filter(x=>x.session=='Open');return {l:lab(o.length?o:pr),fb:false}}
+ return all.length?{l:lab(all),fb:true}:{l:'N/A',fb:false}}
+const pill=(x)=>`<span class="pill ${x.l.replace('/','')}${x.fb?' fb':''}">${x.l}${x.fb?'*':''}</span>`;
+Promise.all(['data/gamma_log.csv','data/qqq_daily.csv'].map(u=>fetch(u+'?'+Date.now()).then(r=>{if(!r.ok)throw new Error(u);return r.text()}))).then(([a,b])=>{
+ const log=parseCSV(a);const days=[...new Set(log.map(x=>x.date))].sort();
+ document.getElementById('status').textContent=`${log.length} readings · ${days[0]} to ${days[days.length-1]}`;
+ const dr={};days.forEach(d=>INST.forEach(i=>dr[d+i]=dayRegime(log,d,i)));
+ document.getElementById('cards').innerHTML=INST.map(i=>{
+  const ds=days.filter(d=>dr[d+i].l!='N/A');const ld=ds[ds.length-1];const x=ld?dr[ld+i]:{l:'N/A'};
+  const lv=log.filter(r=>r.instrument==i&&r.unit=='$B/1%'&&r.gamma_flip!==''&&!isNaN(+r.gamma_flip)).sort((p,q)=>(p.date+p.time_et)<(q.date+q.time_et)?-1:1).pop();
+  const dist=lv&&lv.spot!==''?((+lv.spot/+lv.gamma_flip-1)*100).toFixed(2)+'%':'–';
+  const cls=x.l=='Negative'?'n':x.l=='Positive'?'p':x.l=='Mixed'?'m':'';
+  return `<div class="card ${cls}"><div class="eyebrow">${i} · latest regime</div><div class="mega ${x.l.replace('/','')}">${x.l}</div><div class="note">as of ${ld||'–'}</div>`+
+   (lv?`<div class="lv"><div><span>Gamma flip</span> ${esc(lv.gamma_flip)}</div><div><span>Call wall</span> ${esc(lv.call_wall)} · <span>Put wall</span> ${esc(lv.put_wall)}</div><div><span>Spot</span> ${esc(lv.spot)} · <span>vs flip</span> ${dist}</div><div class="note">levels from ${esc(lv.date)}</div></div>`:'')+`</div>`}).join('');
+ const q=parseCSV(b).sort((p,q)=>p.date<q.date?-1:1);const g={};q.forEach((r,k)=>{if(k)g[r.date]={gap:+r.open/+q[k-1].close-1,chg:+r.close/+q[k-1].close-1}});
+ const pc=v=>v==null?'–':`<span style="color:${v>=0?'var(--pos)':'var(--neg)'}">${(v>=0?'+':'')+(v*100).toFixed(2)}%</span>`;
+ document.getElementById('days').innerHTML='<tr><th>Day</th>'+INST.map(i=>`<th>${i}</th>`).join('')+'<th>QQQ gap</th><th>QQQ day</th></tr>'+
+  days.slice().reverse().map(d=>`<tr><td>${d}</td>${INST.map(i=>`<td>${pill(dr[d+i])}</td>`).join('')}<td>${pc(g[d]?.gap)}</td><td>${pc(g[d]?.chg)}</td></tr>`).join('');
+ const cols=['id','date','time_et','session','instrument','regime','net_gex','unit','gamma_flip','call_wall','put_wall','spot','source','notes'];
+ document.getElementById('log').innerHTML='<tr>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr>'+log.slice().reverse().map(r=>'<tr>'+cols.map(c=>`<td>${esc(r[c])}</td>`).join('')+'</tr>').join('');
+}).catch(e=>{document.getElementById('status').textContent='Could not load data: '+e.message});
+</script></body></html>
