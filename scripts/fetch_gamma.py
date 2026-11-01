@@ -88,6 +88,27 @@ def gexboard(target):
         out.append(row(target, '16:00', 'Close', inst, regime(lv['net']), lv['net'], lv['flip'], lv['call'], lv['put'], lv['spot'], 'GEXBoard'))
     return out
 
+def zblock(txt, sym):
+    m = re.search(r'\n' + sym + r'\n[A-Z ]*GAMMA', txt)
+    if not m: return None
+    end = txt.find(sym + ' gamma levels', m.end())
+    return txt[m.start():end if end > 0 else m.start() + 900]
+
+def zlevels(b):
+    def one(pat):
+        m = re.search(pat, b)
+        return float(m.group(1).replace(',', '')) if m else None
+    n = re.search(r'Net GEX[^\n]*\n\s*(-?)\$\s*(-?[\d,]*\.?\d+)\s*B', b)
+    net = None
+    if n:
+        net = float(n.group(2).replace(',', ''))
+        if n.group(1): net = -abs(net)
+    return dict(net=net,
+                flip=one(r'Gamma flip\s*\n\s*([\d,]+\.?\d*)'),
+                call=one(r'Call wall\s*\n\s*([\d,]+\.?\d*)'),
+                put=one(r'Put wall\s*\n\s*([\d,]+\.?\d*)'),
+                spot=one(r'Reference spot[^\n]*\n\s*([\d,]+\.?\d*)'))
+
 def zerogex(target, morning=False):
     from playwright.sync_api import sync_playwright
     with sync_playwright() as p:
@@ -97,25 +118,26 @@ def zerogex(target, morning=False):
         txt = clean(pg.inner_text('body')); b.close()
     out = []
     for inst in (('NQ', 'NDX', 'QQQ') if morning else ('NQ', 'SPX', 'SPY', 'NDX', 'QQQ')):
-        w = next((w for w in windows(txt, inst, 600) if full(levels(w))), None)
-        if not w:
+        blk = zblock(txt, inst)
+        lv = zlevels(blk) if blk else None
+        if not lv or not full(lv):
             problems.append(f'ZeroGEX {inst}: could not read levels'); continue
-        a = re.search(r'As of[\s:]*([A-Z][a-z]{2,8} \d{1,2},? \d{4})?[,\s]*(\d{1,2}):(\d{2})\s*([AP]M)', w + txt[:3000], re.I)
-        if not a or not a.group(1):
+        a = re.search(r'As of\s+([A-Z][a-z]{2,8} \d{1,2},? \d{4}),?\s*(\d{1,2}):(\d{2})\s*([AP]M)', blk)
+        if not a:
             problems.append(f'ZeroGEX {inst}: as-of date/time not found'); continue
         d = dt.datetime.strptime(a.group(1).replace(',', ''), '%b %d %Y' if len(a.group(1).split()[0]) <= 3 else '%B %d %Y').date()
         h = int(a.group(2)) % 12 + (12 if a.group(4).upper() == 'PM' else 0)
         t = f'{h:02d}:{a.group(3)}'
+        note = 'Morning snapshot' if morning else 'After-close snapshot'
+        if 'temporarily delayed' in blk: note += '; page marked data temporarily delayed'
         if morning:
             if d != target or t < '09:30':
                 problems.append(f'ZeroGEX {inst}: no fresh morning reading (page as-of {d} {t})'); continue
-            lv = levels(w)
-            out.append(row(target, t, 'Open', inst, regime(lv['net']), lv['net'], lv['flip'], lv['call'], lv['put'], lv['spot'], 'ZeroGEX', 'Morning snapshot (page is ~15 min delayed)'))
+            out.append(row(target, t, 'Open', inst, regime(lv['net']), lv['net'], lv['flip'], lv['call'], lv['put'], lv['spot'], 'ZeroGEX', note))
             continue
         if d != target or t < '15:59':
-            continue
-        lv = levels(w)
-        out.append(row(target, t, 'Close', inst, regime(lv['net']), lv['net'], lv['flip'], lv['call'], lv['put'], lv['spot'], 'ZeroGEX', 'After-close snapshot'))
+            problems.append(f'ZeroGEX {inst}: page is as of {d} {t}, not after the {target} close yet'); continue
+        out.append(row(target, t, 'Close', inst, regime(lv['net']), lv['net'], lv['flip'], lv['call'], lv['put'], lv['spot'], 'ZeroGEX', note))
     if not out: print(txt[:2500])
     return out
 
