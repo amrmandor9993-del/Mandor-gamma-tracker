@@ -56,7 +56,8 @@ const valid=r=>['Positive','Negative','Mixed'].includes(r.regime);
 function lab(rs){const p=rs.filter(x=>x.regime=='Positive').length,n=rs.filter(x=>x.regime=='Negative').length,m=rs.filter(x=>x.regime=='Mixed').length;return (m||(p&&n))?'Mixed':p?'Positive':'Negative'}
 function dayRegime(log,d,i){const all=log.filter(x=>x.date==d&&x.instrument==i&&valid(x));const pr=all.filter(x=>x.source==PRIMARY[i]);
  if(pr.length){const o=pr.filter(x=>x.session=='Open');return {l:lab(o.length?o:pr),fb:false}}
- return all.length?{l:lab(all),fb:true}:{l:'N/A',fb:false}}
+ if(all.length){const o2=all.filter(x=>x.session=='Open');return {l:lab(o2.length?o2:all),fb:true}}
+ return {l:'N/A',fb:false}}
 const pill=(x)=>`<span class="pill ${x.l.replace('/','')}${x.fb?' fb':''}">${x.l}${x.fb?'*':''}</span>`;
 Promise.all(['data/gamma_log.csv','data/qqq_daily.csv'].map(u=>fetch(u+'?'+Date.now()).then(r=>{if(!r.ok)throw new Error(u);return r.text()}))).then(([a,b])=>{
  const log=parseCSV(a);const days=[...new Set(log.map(x=>x.date))].sort();
@@ -70,7 +71,7 @@ Promise.all(['data/gamma_log.csv','data/qqq_daily.csv'].map(u=>fetch(u+'?'+Date.
   return `<div class="card ${cls}"><div class="eyebrow">${i} · latest regime</div><div class="mega ${x.l.replace('/','')}">${x.l}</div><div class="note">as of ${ld||'–'}</div>`+
    (lv?`<div class="lv"><div><span>Gamma flip</span> ${esc(lv.gamma_flip)}</div><div><span>Call wall</span> ${esc(lv.call_wall)} · <span>Put wall</span> ${esc(lv.put_wall)}</div><div><span>Spot</span> ${esc(lv.spot)} · <span>vs flip</span> ${dist}</div><div class="note">levels from ${esc(lv.date)}</div></div>`:'')+`</div>`}).join('');
  const q=parseCSV(b).sort((p,q)=>p.date<q.date?-1:1);const g={};q.forEach((r,k)=>{if(k)g[r.date]={gap:+r.open/+q[k-1].close-1,chg:+r.close/+q[k-1].close-1}});
- const hm=document.getElementById('hm');const sd=days.slice(-30);hm.style.gridTemplateColumns='64px repeat('+sd.length+',minmax(58px,1fr))';
+ const hm=document.getElementById('hm');const sd=days.slice(-90);hm.style.gridTemplateColumns='64px repeat('+sd.length+',minmax(58px,1fr))';
  let o='<div></div>'+sd.map(d=>`<div class="dh">${d.slice(5)}</div>`).join('');
  INST.forEach(i=>{o+=`<div class="lab">${i}</div>`+sd.map(d=>{const x=dr[d+i];const sym=x.l=='Negative'?'-':x.l=='Positive'?'+':x.l=='Mixed'?'~':'';
   const cl=log.filter(r=>r.date==d&&r.instrument==i&&r.session=='Close'&&r.unit=='$B/1%').pop();
