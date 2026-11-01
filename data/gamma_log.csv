@@ -93,5 +93,3 @@ id,date,time_et,session,instrument,regime,net_gex,unit,gamma_flip,call_wall,put_
 92,2026-10-14,,Close,SPX,Negative,,,,,,,ReflectionsOfReality,Close 7718.94 vs flip 7734.24
 93,2026-10-14,,Close,SPY,Negative,,,,,,,AdaptiveTrader,From the 15 Oct note (below the flip)
 94,2026-10-14,,Close,QQQ,Negative,,,,,,,AdaptiveTrader,From the 15 Oct note (below the flip)
-95,2026-10-30,,Close,NDX,N/A,,,,,,,GEXBoard,GEXBoard page not updated for this date
-96,2026-10-30,,Close,QQQ,N/A,,,,,,,GEXBoard,GEXBoard page not updated for this date

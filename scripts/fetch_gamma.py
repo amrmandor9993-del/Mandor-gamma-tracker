@@ -71,8 +71,8 @@ def gexboard(target):
         problems.append('GEXBoard: page date not found'); print(txt[:2500]); return []
     page = dt.datetime.strptime(m.group(1), '%B %d, %Y').date()
     if page != target:
-        problems.append(f'GEXBoard page is for {page}, not {target} yet')
-        return [row(target, '', 'Close', i, 'N/A', source='GEXBoard', notes='GEXBoard page not updated for this date') for i in ('NDX', 'QQQ')]
+        print(f'NOTE: GEXBoard page is for {page}, not {target}; skipped (second source, not an error)')
+        return []
     out = []
     for inst in ('NDX', 'QQQ'):
         hit = next((w for w in windows(txt, inst) if full(levels(w))), None)
