@@ -121,7 +121,8 @@ def zerogex(target, morning=False):
         blk = zblock(txt, inst)
         lv = zlevels(blk) if blk else None
         if not lv or not full(lv):
-            problems.append(f'ZeroGEX {inst}: could not read levels'); continue
+            problems.append(f'ZeroGEX {inst}: could not read levels')
+            print(f'--- {inst} block as the page showed it ---'); print((blk or txt[:600])[:700]); continue
         a = re.search(r'As of\s+([A-Z][a-z]{2,8} \d{1,2},? \d{4}),?\s*(\d{1,2}):(\d{2})\s*([AP]M)', blk)
         if not a:
             problems.append(f'ZeroGEX {inst}: as-of date/time not found'); continue
