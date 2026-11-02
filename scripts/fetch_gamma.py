@@ -98,10 +98,10 @@ def zlevels(b):
     def one(pat):
         m = re.search(pat, b)
         return float(m.group(1).replace(',', '')) if m else None
-    n = re.search(r'Net GEX[^\n]*\n\s*(-?)\$\s*(-?[\d,]*\.?\d+)\s*B', b)
+    n = re.search(r'Net GEX[^\n]*\n\s*(-?)\$\s*(-?[\d,]*\.?\d+)\s*([BMK])', b)
     net = None
     if n:
-        net = float(n.group(2).replace(',', ''))
+        net = float(n.group(2).replace(',', '')) / {'B': 1, 'M': 1e3, 'K': 1e6}[n.group(3)]
         if n.group(1): net = -abs(net)
     return dict(net=net,
                 flip=one(r'Gamma flip\s*\n\s*([\d,]+\.?\d*)'),
