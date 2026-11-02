@@ -93,3 +93,4 @@ id,date,time_et,session,instrument,regime,net_gex,unit,gamma_flip,call_wall,put_
 92,2026-10-14,,Close,SPX,Negative,,,,,,,ReflectionsOfReality,Close 7718.94 vs flip 7734.24
 93,2026-10-14,,Close,SPY,Negative,,,,,,,AdaptiveTrader,From the 15 Oct note (below the flip)
 94,2026-10-14,,Close,QQQ,Negative,,,,,,,AdaptiveTrader,From the 15 Oct note (below the flip)
+95,2026-11-02,09:36,Open,QQQ,Negative,-2.49,$B/1%,723.27,700,685,694.63,ZeroGEX,Morning snapshot
