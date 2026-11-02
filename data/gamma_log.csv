@@ -94,3 +94,5 @@ id,date,time_et,session,instrument,regime,net_gex,unit,gamma_flip,call_wall,put_
 93,2026-10-14,,Close,SPY,Negative,,,,,,,AdaptiveTrader,From the 15 Oct note (below the flip)
 94,2026-10-14,,Close,QQQ,Negative,,,,,,,AdaptiveTrader,From the 15 Oct note (below the flip)
 95,2026-11-02,09:36,Open,QQQ,Negative,-2.49,$B/1%,723.27,700,685,694.63,ZeroGEX,Morning snapshot
+96,2026-11-02,09:39,Open,NQ,Negative,-0.6764,$B/1%,29092,29821,27635,28712,ZeroGEX,Morning snapshot
+97,2026-11-02,09:39,Open,NDX,Negative,-0.6764,$B/1%,28950,29675,27500,28565,ZeroGEX,Morning snapshot
