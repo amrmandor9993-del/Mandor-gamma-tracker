@@ -105,3 +105,6 @@ id,date,time_et,session,instrument,regime,net_gex,unit,gamma_flip,call_wall,put_
 104,2026-11-02,16:00,Close,NDX,Negative,-2.64,$B/1%,28435.15,29675,28000,28180.46,GEXBoard,
 105,2026-11-02,,Open,QQQ,Negative,,,,,,,GEXBoard,Regime at the open per GEXBoard
 106,2026-11-02,16:00,Close,QQQ,Negative,-7.49,$B/1%,710.16,750,680,685.75,GEXBoard,
+107,2026-11-03,10:11,Open,NQ,Negative,-1.43,$B/1%,29768,29817,27632,28308,ZeroGEX,Morning snapshot
+108,2026-11-03,10:11,Open,NDX,Negative,-1.43,$B/1%,29626,29675,27500,28173,ZeroGEX,Morning snapshot
+109,2026-11-03,10:10,Open,QQQ,Negative,-4.84,$B/1%,734.63,700,680,685.36,ZeroGEX,Morning snapshot
