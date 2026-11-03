@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Daily logger: QQQ prices (Yahoo chart API), ZeroGEX main source (NQ, NDX, QQQ, SPX, SPY), GEXBoard second source (NDX, QQQ).
 Never writes a guessed number: if a page cannot be read, that item is skipped and the run is marked failed."""
-import csv, os, re, sys, json, urllib.request, datetime as dt
+import csv, os, re, sys, json, time, urllib.request, datetime as dt
 from html.parser import HTMLParser
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -47,7 +47,7 @@ def windows(txt, sym, size=1500):
         yield w[:min(cut)] if cut else w
 def full(lv): return all(lv[k] is not None for k in lv)
 def regime(net): return 'Positive' if net > 0 else 'Negative' if net < 0 else 'Mixed'
-def fmt(x): return ('%g' % x) if x is not None else ''
+def fmt(x): return (f'{x:.4f}'.rstrip('0').rstrip('.')) if x is not None else ''
 
 def row(date, time, session, inst, reg, net=None, flip=None, call=None, put=None, spot=None, source='', notes=''):
     return dict(date=date.isoformat(), time_et=time, session=session, instrument=inst, regime=reg,
@@ -64,6 +64,27 @@ def prices(target):
             return [target.isoformat()] + ['%.2f' % x for x in v[:4]] + [str(int(v[4]))]
     return None
 
+def gexboard_table(txt, target):
+    """GEXBoard's table layout: label line, then NDX, QQQ, QQQ-on-NDX-scale values."""
+    def vals(label, n=2):
+        m = re.search(label + r'\s*\n((?:\s*\$?-?\$?[\d,]+\.?\d*B?\s*\n){%d})' % n, txt)
+        if not m: return None
+        out = []
+        for x in m.group(1).split('\n'):
+            x = x.strip()
+            if x: out.append(float(re.sub(r'[^\d.\-]', '', x)))
+        return out if len(out) >= n else None
+    call, put, flip, close, net = (vals(r'Call Wall'), vals(r'Put Wall'), vals(r'Gamma Flip'), vals(r'Close'), vals(r'Net GEX'))
+    if not all([call, put, flip, close, net]): return []
+    reg = re.search(r'Regime at the open\s*\n\s*(short|long|mixed) gamma\s*\n\s*(short|long|mixed) gamma', txt, re.I)
+    out = []
+    for i, inst in enumerate(('NDX', 'QQQ')):
+        if reg:
+            out.append(row(target, '', 'Open', inst, {'short': 'Negative', 'long': 'Positive', 'mixed': 'Mixed'}[reg.group(i + 1).lower()],
+                           source='GEXBoard', notes='Regime at the open per GEXBoard'))
+        out.append(row(target, '16:00', 'Close', inst, regime(net[i]), net[i], flip[i], call[i], put[i], close[i], 'GEXBoard'))
+    return out
+
 def gexboard(target):
     txt = text_of(fetch('https://gexboard.com/learn/nasdaq-gamma-levels'))
     m = re.search(r'([A-Z][a-z]+ \d{1,2}, \d{4})\s*close', txt)
@@ -73,7 +94,8 @@ def gexboard(target):
     if page != target:
         print(f'NOTE: GEXBoard page is for {page}, not {target}; skipped (second source, not an error)')
         return []
-    out = []
+    out = gexboard_table(txt, target)
+    if out: return out
     for inst in ('NDX', 'QQQ'):
         hit = next((w for w in windows(txt, inst) if full(levels(w))), None)
         if not hit:
@@ -152,8 +174,16 @@ def main():
     log = list(csv.DictReader(open(LOG)))
     new = []
     if morning:
-        try: new += zerogex(target, morning=True)
-        except Exception as e: problems.append(f'zerogex failed: {e}')
+        found = {}
+        for attempt in range(8):
+            del problems[:]
+            try:
+                for r in zerogex(target, morning=True): found[r['instrument']] = r
+            except Exception as e: problems.append(f'zerogex failed: {e}')
+            if len(found) == 3 or dt.datetime.now(NY).strftime('%H:%M') > '10:10': break
+            print(f'attempt {attempt + 1}: have {sorted(found)}; waiting 2 minutes'); time.sleep(120)
+        if len(found) == 3: del problems[:]
+        new += list(found.values())
     else:
         px = list(csv.reader(open(PX)))
         try: p = prices(target)
