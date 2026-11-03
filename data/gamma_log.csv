@@ -101,3 +101,7 @@ id,date,time_et,session,instrument,regime,net_gex,unit,gamma_flip,call_wall,put_
 100,2026-11-02,17:51,Close,SPY,Negative,-5.03,$B/1%,769.2,760,740,752.26,ZeroGEX,After-close snapshot
 101,2026-11-02,15:59,Close,NDX,Negative,-1.25,$B/1%,29679,29675,27500,27990,ZeroGEX,After-close snapshot; page marked data temporarily delayed
 102,2026-11-02,17:51,Close,QQQ,Negative,-2.71,$B/1%,733.25,700,680,681.58,ZeroGEX,After-close snapshot
+103,2026-11-02,,Open,NDX,Negative,,,,,,,GEXBoard,Regime at the open per GEXBoard
+104,2026-11-02,16:00,Close,NDX,Negative,-2.64,$B/1%,28435.15,29675,28000,28180.46,GEXBoard,
+105,2026-11-02,,Open,QQQ,Negative,,,,,,,GEXBoard,Regime at the open per GEXBoard
+106,2026-11-02,16:00,Close,QQQ,Negative,-7.49,$B/1%,710.16,750,680,685.75,GEXBoard,
