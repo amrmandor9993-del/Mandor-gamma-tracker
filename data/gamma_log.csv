@@ -117,3 +117,6 @@ id,date,time_et,session,instrument,regime,net_gex,unit,gamma_flip,call_wall,put_
 116,2026-11-03,17:48,Close,SPY,Negative,-9.8,$B/1%,773.76,770,750,755.61,ZeroGEX,After-close snapshot
 117,2026-11-03,15:59,Close,NDX,Negative,-1.06,$B/1%,29636,29675,27500,28180,ZeroGEX,After-close snapshot; page marked data temporarily delayed
 118,2026-11-03,17:49,Close,QQQ,Negative,-4.26,$B/1%,733.27,700,680,688.02,ZeroGEX,After-close snapshot
+119,2026-11-04,09:31,Open,QQQ,Negative,-4.96,$B/1%,722.46,700,680,690.7,ZeroGEX,Morning snapshot
+120,2026-11-04,09:32,Open,NQ,Negative,-1.04,$B/1%,29388,29814,27629,28463,ZeroGEX,Morning snapshot
+121,2026-11-04,09:32,Open,NDX,Negative,-1.04,$B/1%,29251,29675,27500,28328,ZeroGEX,Morning snapshot
