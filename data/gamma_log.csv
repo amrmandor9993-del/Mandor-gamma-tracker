@@ -190,3 +190,4 @@ id,date,time_et,session,instrument,regime,net_gex,unit,gamma_flip,call_wall,put_
 189,2026-11-17,09:40,Open,QQQ,Negative,-2.48,$B/1%,688.15,680,650,661.93,ZeroGEX,Morning snapshot
 190,2026-11-17,18:04,Close,SPY,Negative,-7.81,$B/1%,754.3,750,725,737.95,ZeroGEX,After-close snapshot
 191,2026-11-17,18:04,Close,QQQ,Negative,-1.04,$B/1%,673.99,680,650,665.92,ZeroGEX,After-close snapshot
+192,2026-11-18,09:36,Open,QQQ,Negative,-2.05,$B/1%,677.67,680,650,658.39,ZeroGEX,Morning snapshot
