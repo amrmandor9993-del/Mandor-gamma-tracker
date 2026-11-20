@@ -202,3 +202,4 @@ id,date,time_et,session,instrument,regime,net_gex,unit,gamma_flip,call_wall,put_
 201,2026-11-19,15:59,Close,NDX,Negative,-1.94,$B/1%,28172,27000,26500,26517,ZeroGEX,After-close snapshot; page marked data temporarily delayed
 202,2026-11-19,17:48,Close,QQQ,Negative,-1.93,$B/1%,674.35,665,640,645.1,ZeroGEX,After-close snapshot
 203,2026-11-20,09:37,Open,QQQ,Negative,-1.74,$B/1%,668.16,650,630,637.33,ZeroGEX,Morning snapshot
+204,2026-11-20,17:55,Close,SPY,Negative,-4.54,$B/1%,749.24,730,675,695.85,ZeroGEX,After-close snapshot
