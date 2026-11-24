@@ -210,3 +210,9 @@ id,date,time_et,session,instrument,regime,net_gex,unit,gamma_flip,call_wall,put_
 209,2026-11-23,16:00,Close,QQQ,Negative,-0.88,$B/1%,657.4,700,640,651.05,GEXBoard,
 210,2026-11-23,18:04,Close,SPY,Negative,-1.99,$B/1%,733.84,730,720,723.85,ZeroGEX,After-close snapshot
 211,2026-11-24,09:42,Open,QQQ,Negative,-2.16,$B/1%,665.76,680,635,639.04,ZeroGEX,Morning snapshot
+212,2026-11-24,,Open,NDX,Negative,,,,,,,GEXBoard,Regime at the open per GEXBoard
+213,2026-11-24,16:00,Close,NDX,Negative,-2.04,$B/1%,26901.33,25850,26200,26208.45,GEXBoard,
+214,2026-11-24,,Open,QQQ,Negative,,,,,,,GEXBoard,Regime at the open per GEXBoard
+215,2026-11-24,16:00,Close,QQQ,Negative,-4.35,$B/1%,654.81,700,640,637.92,GEXBoard,
+216,2026-11-24,18:02,Close,SPY,Negative,-3.89,$B/1%,733.91,720,700,718.9,ZeroGEX,After-close snapshot
+217,2026-11-24,18:02,Close,QQQ,Negative,-1.04,$B/1%,653.21,680,635,639.18,ZeroGEX,After-close snapshot
