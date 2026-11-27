@@ -222,3 +222,4 @@ id,date,time_et,session,instrument,regime,net_gex,unit,gamma_flip,call_wall,put_
 221,2026-11-25,16:00,Close,QQQ,Negative,-3.66,$B/1%,647.25,700,635,634.34,GEXBoard,
 222,2026-11-25,17:59,Close,SPY,Negative,-4.12,$B/1%,733.26,720,700,716.3,ZeroGEX,After-close snapshot
 223,2026-11-25,17:59,Close,QQQ,Negative,-1.25,$B/1%,654.8,650,630,632.71,ZeroGEX,After-close snapshot
+224,2026-11-27,09:38,Open,QQQ,Negative,-0.5917,$B/1%,649.16,650,640,639.63,ZeroGEX,Morning snapshot
